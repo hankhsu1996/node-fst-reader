@@ -46,11 +46,24 @@ Value GetStartTime(const CallbackInfo& info) {
   return Number::New(info.Env(), startTime);
 }
 
+// Function to wrap fstReaderGetEndTime
+Value GetEndTime(const CallbackInfo& info) {
+  // Ensure the argument is an External pointer
+  if (info.Length() < 1 || !info[0].IsExternal()) {
+    throw TypeError::New(info.Env(), "Expected an external pointer to context");
+  }
+
+  void* ctx = info[0].As<External<void>>().Data();
+  uint64_t endTime = fstReaderGetEndTime(ctx);
+  return Number::New(info.Env(), endTime);
+}
+
 // Initialize and export the wrapped functions
 Object Init(Env env, Object exports) {
   exports.Set("openFstFile", Function::New(env, OpenFstFile));
   exports.Set("closeFstFile", Function::New(env, CloseFstFile));
   exports.Set("getStartTime", Function::New(env, GetStartTime));
+  exports.Set("getEndTime", Function::New(env, GetEndTime));
   return exports;
 }
 

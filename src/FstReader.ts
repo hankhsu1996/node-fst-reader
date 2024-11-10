@@ -14,4 +14,8 @@ export class FstReader {
   getStartTime(): number {
     return addon.getStartTime(this.ctx);
   }
+
+  getEndTime(): number {
+    return addon.getEndTime(this.ctx);
+  }
 }
