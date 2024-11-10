@@ -1,4 +1,4 @@
-const addon = require('../build/Release/fst_reader');
+const addon = require("../build/Release/fst_reader");
 
 export class FstReader {
   private ctx: any;
@@ -17,5 +17,9 @@ export class FstReader {
 
   getEndTime(): number {
     return addon.getEndTime(this.ctx);
+  }
+
+  getSignalHandle(signalName: string): number {
+    return addon.getSignalHandle(this.ctx, signalName);
   }
 }
