@@ -6,14 +6,25 @@ This package provides bindings for `libfst`, the library used by [GTKWave](https
 
 ## API
 
-| Method                                                             | Description                                   |
-| ------------------------------------------------------------------ | --------------------------------------------- |
-| `constructor(filePath: string)`                                    | Opens the FST file at the given path.         |
-| `close()`                                                          | Closes the opened FST file.                   |
-| `getStartTime(): number`                                           | Returns the start time of the FST file.       |
-| `getEndTime(): number`                                             | Returns the end time of the FST file.         |
-| `getSignalHandle(signalName: string): number`                      | Returns the handle for the given signal name. |
-| `getSignalValueAtTime(signalHandle: number, time: number): string` | Returns the signal value at a specific time.  |
+```typescript
+// Open the FST file at the given path
+const reader = new FstReader(fstFilePath);
+
+// Get the start time of the FST file
+const startTime = reader.getStartTime();
+
+// Get the end time of the FST file
+const endTime = reader.getEndTime();
+
+// Retrieve the handle for a specific signal name
+const signalHandle = reader.getSignalHandle("reset");
+
+// Get the signal value at a specific time using the signal handle
+const valueAtTime100 = reader.getSignalValueAtTime(signalHandle, 100);
+
+// Close the FST file reader
+reader.close();
+```
 
 ## Notes
 
