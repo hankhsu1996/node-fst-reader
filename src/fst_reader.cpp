@@ -91,6 +91,27 @@ Napi::Value GetSignalHandle(const CallbackInfo &info) {
   return Number::New(env, handle);
 }
 
+// Wrapper for `fstReaderGetValueFromHandleAtTime`
+Value GetSignalValueAtTime(const CallbackInfo &info) {
+  if (info.Length() < 4 || !info[0].IsExternal() || !info[1].IsNumber() ||
+      !info[2].IsNumber() || !info[3].IsBuffer()) {
+    throw TypeError::New(info.Env(),
+                         "Expected context pointer, time (number), signal "
+                         "handle (number), and buffer (Buffer)");
+  }
+
+  void *ctx = info[0].As<External<void>>().Data();
+  uint64_t time = info[1].As<Number>().Int64Value();
+  fstHandle handle = info[2].As<Number>().Int32Value();
+  char *buf = (char *)info[3].As<Buffer<char>>().Data();
+
+  // Call the underlying libfst function
+  char *result = fstReaderGetValueFromHandleAtTime(ctx, time, handle, buf);
+
+  // Return the buffer content as a string
+  return String::New(info.Env(), result);
+}
+
 // Initialize and export the wrapped functions
 Object Init(Env env, Object exports) {
   exports.Set("openFstFile", Function::New(env, OpenFstFile));
@@ -98,6 +119,7 @@ Object Init(Env env, Object exports) {
   exports.Set("getStartTime", Function::New(env, GetStartTime));
   exports.Set("getEndTime", Function::New(env, GetEndTime));
   exports.Set("getSignalHandle", Function::New(env, GetSignalHandle));
+  exports.Set("getSignalValueAtTime", Function::New(env, GetSignalValueAtTime));
   return exports;
 }
 

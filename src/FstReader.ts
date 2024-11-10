@@ -22,4 +22,14 @@ export class FstReader {
   getSignalHandle(signalName: string): number {
     return addon.getSignalHandle(this.ctx, signalName);
   }
+
+  getSignalValueAtTime(signalHandle: number, time: number): string {
+    const buffer = Buffer.alloc(256);
+    addon.getSignalValueAtTime(this.ctx, time, signalHandle, buffer);
+
+    const nullByteIndex = buffer.indexOf(0);
+    const length = nullByteIndex === -1 ? 64 : nullByteIndex;
+
+    return buffer.toString("utf8", 0, length).trim();
+  }
 }
