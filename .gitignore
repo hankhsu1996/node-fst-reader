@@ -1,0 +1,73 @@
+# Node.js dependencies
+node_modules/
+
+# Output from node-gyp build
+build/
+Release/
+Debug/
+
+# Ignore compiled .node files (native addons)
+*.node
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment files (optional)
+.env
+.env.*.local
+
+# Compiled TypeScript files (if using TypeScript)
+dist/
+out/
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# Optional cache directories
+.cache/
+.tmp/
+
+# node-gyp cache and downloaded headers
+~/.cache/node-gyp/
+~/.node-gyp/
+
+# Compiled JSON databases
+compile_commands.json
+
+# IDE and editor specific files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Temporary files from build or testing
+*.log
+*.obj
+*.o
+*.pdb
+*.ilk
+*.lo
+*.hi
+*.dSYM/
+*.orig
+*.rej
+
+# Package and artifact files
+*.tgz
+*.gz
+*.zip
+
+# Coverage output
+coverage/
+*.lcov
+.lcov.*
+
+# Language server
+compile_flags.txt
+compile_commands.json
+.clangd
