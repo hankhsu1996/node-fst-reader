@@ -1,5 +1,7 @@
 # Node FST Reader
 
+[![Build and Test](https://github.com/hankhsu1996/node-fst-reader/actions/workflows/build-and-test.yml/badge.svg?event=push)](https://github.com/hankhsu1996/node-fst-reader/actions/workflows/build-and-test.yml)
+
 A Node.js library for reading FST (Fast Signal Trace) waveform files.
 
 This package provides bindings for `libfst`, the library used by [GTKWave](https://github.com/gtkwave/gtkwave), allowing you to read and extract signal values from FST files within your Node.js applications.
