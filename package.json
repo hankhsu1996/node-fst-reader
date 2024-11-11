@@ -1,7 +1,6 @@
 {
   "name": "fst-reader",
   "version": "1.0.0",
-  "main": "index.js",
   "description": "A Node.js library for reading FST waveform files, designed to parse and access signal values from Fast Signal Trace (FST) files generated in digital simulation tools.",
   "keywords": [
     "nodejs",
@@ -11,15 +10,20 @@
     "gtkwave",
     "fast-signal-trace"
   ],
-  "author": "Shou-Li Hsu",
   "license": "MIT",
+  "author": "Shou-Li Hsu",
+  "main": "dist/index.js",
   "scripts": {
-  "build-fst-lib": "mkdir -p external/libfst/build && cd external/libfst/build && cmake .. && make",
-  "configure-addon": "node-gyp configure",
-  "build-addon": "npm run configure-addon && node-gyp build",
-  "build": "npm run build-fst-lib && npm run build-addon",
-  "test": "jest"
-},
+    "build": "npm run build-fst-lib && npm run build-addon && npm run build-ts",
+    "build-addon": "npm run configure-addon && node-gyp build",
+    "build-fst-lib": "mkdir -p external/libfst/build && cd external/libfst/build && cmake .. && make",
+    "build-ts": "tsc",
+    "configure-addon": "node-gyp configure",
+    "test": "jest"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.2.2"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0",
@@ -27,8 +31,5 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "node-addon-api": "^8.2.2"
   }
 }
