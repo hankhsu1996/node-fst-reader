@@ -1,9 +1,8 @@
-#include "fstapi.h"
+#include "FstFile.hpp"
 #include <napi.h>
 
 using namespace Napi;
 
-// Function to wrap fstReaderOpen
 Value OpenFstFile(const CallbackInfo &info) {
   Env env = info.Env();
 
@@ -12,113 +11,81 @@ Value OpenFstFile(const CallbackInfo &info) {
   }
 
   std::string filePath = info[0].As<String>().Utf8Value();
-  void *ctx = fstReaderOpen(filePath.c_str());
+  auto fstFile = new FstFile(filePath);
 
-  if (!ctx) {
-    throw Error::New(env, "Failed to open FST file: Invalid path or file");
-  }
-
-  return External<void>::New(env, ctx);
+  return External<FstFile>::New(env, fstFile,
+                                [](Env, FstFile *file) { delete file; });
 }
 
-// Function to wrap fstReaderClose
-void CloseFstFile(const CallbackInfo &info) {
-  if (info.Length() < 1 || !info[0].IsExternal()) {
-    throw TypeError::New(info.Env(), "Expected an external pointer to context");
-  }
-
-  void *ctx = info[0].As<External<void>>().Data();
-  fstReaderClose(ctx);
-}
-
-// Function to wrap fstReaderGetStartTime
 Value GetStartTime(const CallbackInfo &info) {
   if (info.Length() < 1 || !info[0].IsExternal()) {
-    throw TypeError::New(info.Env(), "Expected an external pointer to context");
+    throw TypeError::New(info.Env(), "Expected an external pointer to FstFile");
   }
 
-  void *ctx = info[0].As<External<void>>().Data();
-  uint64_t startTime = fstReaderGetStartTime(ctx);
-  return Number::New(info.Env(), startTime);
+  auto *fstFile = info[0].As<External<FstFile>>().Data();
+  return Number::New(info.Env(), fstFile->getStartTime());
 }
 
-// Function to wrap fstReaderGetEndTime
 Value GetEndTime(const CallbackInfo &info) {
   if (info.Length() < 1 || !info[0].IsExternal()) {
-    throw TypeError::New(info.Env(), "Expected an external pointer to context");
+    throw TypeError::New(info.Env(), "Expected an external pointer to FstFile");
   }
 
-  void *ctx = info[0].As<External<void>>().Data();
-  uint64_t endTime = fstReaderGetEndTime(ctx);
-  return Number::New(info.Env(), endTime);
+  auto *fstFile = info[0].As<External<FstFile>>().Data();
+  return Number::New(info.Env(), fstFile->getEndTime());
 }
 
-// Function to get signal handle by name
-fstHandle getSignalHandle(void *ctx, const std::string &signalName) {
-  struct fstHier *hier = fstReaderIterateHier(ctx);
-
-  while (hier) {
-    if (hier->htyp == FST_HT_VAR) {
-      auto const &var = hier->u.var;
-
-      if (signalName == var.name) {
-        return var.handle;
-      }
-    }
-
-    hier = fstReaderIterateHier(ctx);
+Value GetScopeId(const CallbackInfo &info) {
+  if (info.Length() < 2 || !info[0].IsExternal() || !info[1].IsString()) {
+    throw TypeError::New(info.Env(), "Expected FstFile pointer and scope path");
   }
 
-  return 0;
+  auto *fstFile = info[0].As<External<FstFile>>().Data();
+  std::string scopePath = info[1].As<String>().Utf8Value();
+  return Number::New(info.Env(), fstFile->getScopeId(scopePath));
 }
 
-// Function to wrap `getSignalHandle`
-Napi::Value GetSignalHandle(const CallbackInfo &info) {
+Value GetSignalId(const CallbackInfo &info) {
+  if (info.Length() < 2 || !info[0].IsExternal() || !info[1].IsString()) {
+    throw TypeError::New(info.Env(),
+                         "Expected FstFile pointer and signal path");
+  }
+
+  auto *fstFile = info[0].As<External<FstFile>>().Data();
+  std::string signalPath = info[1].As<String>().Utf8Value();
+  scopeId startingScope = info.Length() > 2 && info[2].IsNumber()
+                              ? info[2].As<Number>().Uint32Value()
+                              : 0;
+  return Number::New(info.Env(),
+                     fstFile->getSignalId(signalPath, startingScope));
+}
+
+Value GetSignalValueAtTime(const CallbackInfo &info) {
   Env env = info.Env();
 
-  // Ensure the arguments are valid (context pointer and signal name string)
-  if (info.Length() < 2 || !info[0].IsExternal() || !info[1].IsString()) {
-    throw TypeError::New(
-        env,
-        "Expected an external pointer to context and a signal name string");
-  }
-
-  void *ctx = info[0].As<External<void>>().Data();
-  std::string signalName = info[1].As<String>().Utf8Value();
-
-  fstHandle handle = getSignalHandle(ctx, signalName);
-
-  return Number::New(env, handle);
-}
-
-// Wrapper for `fstReaderGetValueFromHandleAtTime`
-Value GetSignalValueAtTime(const CallbackInfo &info) {
   if (info.Length() < 4 || !info[0].IsExternal() || !info[1].IsNumber() ||
       !info[2].IsNumber() || !info[3].IsBuffer()) {
-    throw TypeError::New(info.Env(),
-                         "Expected context pointer, time (number), signal "
-                         "handle (number), and buffer (Buffer)");
+    throw TypeError::New(env, "Expected FstFile pointer, time (number), signal "
+                              "handle (number), and buffer (Buffer)");
   }
 
-  void *ctx = info[0].As<External<void>>().Data();
+  auto *fstFile = info[0].As<External<FstFile>>().Data();
   uint64_t time = info[1].As<Number>().Int64Value();
   fstHandle handle = info[2].As<Number>().Int32Value();
-  char *buf = (char *)info[3].As<Buffer<char>>().Data();
+  Buffer<char> buffer = info[3].As<Buffer<char>>();
 
-  // Call the underlying libfst function
-  char *result = fstReaderGetValueFromHandleAtTime(ctx, time, handle, buf);
+  char *buf = buffer.Data();
+  std::string result = fstFile->getSignalValueAtTime(time, handle, buf);
 
-  // Return the buffer content as a string
-  return String::New(info.Env(), result);
+  return String::New(env, result);
 }
 
-// Initialize and export the wrapped functions
 Object Init(Env env, Object exports) {
   exports.Set("openFstFile", Function::New(env, OpenFstFile));
-  exports.Set("closeFstFile", Function::New(env, CloseFstFile));
   exports.Set("getStartTime", Function::New(env, GetStartTime));
   exports.Set("getEndTime", Function::New(env, GetEndTime));
-  exports.Set("getSignalHandle", Function::New(env, GetSignalHandle));
+  exports.Set("getScopeId", Function::New(env, GetScopeId));
+  exports.Set("getSignalId", Function::New(env, GetSignalId));
   exports.Set("getSignalValueAtTime", Function::New(env, GetSignalValueAtTime));
   return exports;
 }

@@ -7,10 +7,6 @@ export class FstReader {
     this.ctx = addon.openFstFile(filePath);
   }
 
-  close() {
-    addon.closeFstFile(this.ctx);
-  }
-
   getStartTime(): number {
     return addon.getStartTime(this.ctx);
   }
@@ -19,13 +15,17 @@ export class FstReader {
     return addon.getEndTime(this.ctx);
   }
 
-  getSignalHandle(signalName: string): number {
-    return addon.getSignalHandle(this.ctx, signalName);
+  getScopeId(scopeName: string): number {
+    return addon.getScopeId(this.ctx, scopeName);
   }
 
-  getSignalValueAtTime(signalHandle: number, time: number): string {
+  getSignalId(signalName: string, startScopeId = 0): number {
+    return addon.getSignalId(this.ctx, signalName, startScopeId);
+  }
+
+  getSignalValueAtTime(signalId: number, time: number): string {
     const buffer = Buffer.alloc(256);
-    addon.getSignalValueAtTime(this.ctx, time, signalHandle, buffer);
+    addon.getSignalValueAtTime(this.ctx, time, signalId, buffer);
 
     const nullByteIndex = buffer.indexOf(0);
     const length = nullByteIndex === -1 ? 64 : nullByteIndex;

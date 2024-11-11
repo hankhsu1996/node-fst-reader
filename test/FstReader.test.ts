@@ -9,7 +9,6 @@ describe("FstReader", () => {
     const startTime = reader.getStartTime();
     expect(typeof startTime).toBe("number");
     expect(startTime).toBeGreaterThanOrEqual(0);
-    reader.close();
   });
 
   test("should open FST file and get end time", () => {
@@ -17,33 +16,30 @@ describe("FstReader", () => {
     const endTime = reader.getEndTime();
     expect(typeof endTime).toBe("number");
     expect(endTime).toBeGreaterThanOrEqual(0);
-    reader.close();
   });
 
-  test("should close FST file without error", () => {
+  test("should open FST file and get scope ID", () => {
     const reader = new FstReader(fstFilePath);
-    expect(() => reader.close()).not.toThrow();
+    const scopeId = reader.getScopeId("fejkon_fc_debug");
+    expect(typeof scopeId).toBe("number");
+    expect(scopeId).toBeGreaterThan(0);
   });
 
-  test("should open FST file and get signal handle", () => {
+  test("should open FST file and get signal ID", () => {
     const reader = new FstReader(fstFilePath);
-    const signalHandle = reader.getSignalHandle("reset");
-    expect(typeof signalHandle).toBe("number");
-    expect(signalHandle).toBeGreaterThan(0);
-    reader.close();
+    const scopeId = reader.getScopeId("fejkon_fc_debug");
+    const signalId = reader.getSignalId("reset", scopeId);
+    expect(typeof signalId).toBe("number");
+    expect(signalId).toBeGreaterThan(0);
   });
 
   test("should open FST file and get signal value at specific times", () => {
     const reader = new FstReader(fstFilePath);
-    const signalHandle = reader.getSignalHandle("reset");
-
-    expect(signalHandle).toBeGreaterThan(0);
-
-    expect(reader.getSignalValueAtTime(signalHandle, 100)).toBe("0");
-    expect(reader.getSignalValueAtTime(signalHandle, 200)).toBe("1");
-    expect(reader.getSignalValueAtTime(signalHandle, 300)).toBe("0");
-    expect(reader.getSignalValueAtTime(signalHandle, 400)).toBe("0");
-
-    reader.close();
+    const signalId = reader.getSignalId("fejkon_fc_debug.reset");
+    expect(signalId).toBeGreaterThan(0);
+    expect(reader.getSignalValueAtTime(signalId, 100)).toBe("0");
+    expect(reader.getSignalValueAtTime(signalId, 200)).toBe("1");
+    expect(reader.getSignalValueAtTime(signalId, 300)).toBe("0");
+    expect(reader.getSignalValueAtTime(signalId, 400)).toBe("0");
   });
 });
