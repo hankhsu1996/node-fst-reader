@@ -1,0 +1,40 @@
+# Exclude node_modules (handled by npm automatically)
+node_modules/
+
+# Exclude build directories and intermediate build files
+build/
+Release/
+Debug/
+*.node
+*.o
+*.obj
+*.dSYM/
+*.log
+*.tmp
+
+# Exclude test files and test data
+test/
+*.test.*
+*.spec.*
+data/
+
+# Exclude source files not needed for distribution
+external/libfst/build/
+external/libfst/CMakeLists.txt
+external/libfst/*.c
+external/libfst/*.h
+src/fst_reader.cpp
+
+# Exclude documentation or dev-related files
+*.md
+*.log
+.env
+.cache/
+dist/
+out/
+.idea/
+.vscode/
+coverage/
+*.tgz
+*.zip
+*.gz
