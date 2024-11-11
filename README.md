@@ -16,14 +16,16 @@ const startTime = reader.getStartTime();
 // Get the end time of the FST file
 const endTime = reader.getEndTime();
 
-// Retrieve the handle for a specific signal name
-const signalHandle = reader.getSignalHandle("reset");
+// Retrieve the scope ID for a specific scope name
+const scopeId = reader.getScopeId("my_scope");
 
-// Get the signal value at a specific time using the signal handle
-const valueAtTime100 = reader.getSignalValueAtTime(signalHandle, 100);
+// Retrieve the signal ID within a given scope
+const signalId = reader.getSignalId("my_signal", scopeId);
 
-// Close the FST file reader
-reader.close();
+// Get the signal value at a specific time using the signal ID
+const valueAtTime100 = reader.getSignalValueAtTime(signalId, 100);
+
+// Automatic cleanup; no need to manually close the reader
 ```
 
 ## Notes
