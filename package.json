@@ -13,6 +13,7 @@
   "license": "MIT",
   "author": "Shou-Li Hsu",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run build-fst-lib && npm run build-addon && npm run build-ts",
     "build-addon": "npm run configure-addon && node-gyp build",
