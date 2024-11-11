@@ -10,6 +10,10 @@
     "gtkwave",
     "fast-signal-trace"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hankhsu1996/node-fst-reader.git"
+  },
   "license": "MIT",
   "author": "Shou-Li Hsu",
   "main": "dist/index.js",
