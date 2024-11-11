@@ -24,6 +24,9 @@ const scopeId: number = reader.getScopeId("my_scope");
 // Retrieve the signal ID within a given scope
 const signalId: number = reader.getSignalId("my_signal", scopeId);
 
+// Retrieve the signal ID by specifying the full path, starting from the root
+const signalIdFromRoot: number = reader.getSignalId("my_scope.my_signal");
+
 // Get the signal value at a specific time using the signal ID
 const valueAtTime100: string = reader.getSignalValueAtTime(signalId, 100);
 
