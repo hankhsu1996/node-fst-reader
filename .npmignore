@@ -6,13 +6,12 @@ build/
 *.log
 *.tmp
 
-# Exclude test files
+# Exclude test files and related artifacts
 test/
 *.test.*
 *.spec.*
 
 # Exclude unnecessary files from development
-external/libfst/
 jest.config.js
 tsconfig.json
 
@@ -34,5 +33,5 @@ coverage/
 *.bak
 Thumbs.db
 
-# CI configuration and metadata
+# Exclude CI-related configuration files
 .github/
