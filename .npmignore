@@ -1,35 +1,22 @@
-# Exclude everything in the build folder except the .node file in Release
+# Exclude build artifacts and intermediate files
 build/
-!build/Release/fst_reader.node
-
-# Explicitly exclude specific build files
-build/binding.Makefile
-build/Makefile
-build/Release/obj.target/
-build/Release/.deps/
-build/*.mk
-
-# Ignore other build and intermediate files
 *.o
 *.obj
 *.dSYM/
 *.log
 *.tmp
 
-# Ignore source files and dev-related files
-external/libfst/
-src/
+# Exclude test files
 test/
 *.test.*
 *.spec.*
-*.c
-*.h
-binding.gyp
-compile_flags.txt
+
+# Exclude unnecessary files from development
+external/libfst/
 jest.config.js
 tsconfig.json
 
-# Ignore development and editor-specific files
+# Exclude development and editor-specific files
 node_modules/
 *.md
 !.README.md
@@ -47,5 +34,5 @@ coverage/
 *.bak
 Thumbs.db
 
-# CI
+# CI configuration and metadata
 .github/
